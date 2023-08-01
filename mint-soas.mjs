@@ -1,8 +1,9 @@
-const ethers = require('ethers')
+import ethers from 'ethers'
 
-const abi = require('./soas-abi.json')
+import abi from './soas-abi.json' assert { type: "json" };
+import { sOASAddress } from './constants.mjs'
+
 const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.oasys.games')
-const sOASAddress = '0x5200000000000000000000000000000000000002'
 
 const main = async () => {
   const _since = await provider.getBlockNumber()

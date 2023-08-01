@@ -1,10 +1,14 @@
 {
-  "name": "oasys-erc20-minter",
+  "name": "oasys-mint-derivative-tokens",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "lilpacy <revivedtomorrow@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "ethers": "5"
+  },
+  "scripts": {
+    "gitignore": "npx add-gitignore node",
+    "soas": "node index.js",
+    "woas": "node index.js"
   }
 }
