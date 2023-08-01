@@ -8,7 +8,7 @@
   },
   "scripts": {
     "gitignore": "npx add-gitignore node",
-    "soas": "node index.js",
-    "woas": "node index.js"
+    "soas": "node mint-soas.mjs",
+    "woas": "node mint-woas.mjs"
   }
 }
