@@ -1,9 +1,13 @@
 import ethers from 'ethers'
 
 import abi from './soas-abi.json' assert { type: "json" };
-import { sOASAddress, testnetRpc } from './constants.mjs'
+import { mainnetRpc, sOASAddress, testnetRpc } from './constants.mjs'
 
-const provider = new ethers.providers.JsonRpcProvider(testnetRpc)
+const network = process.argv.includes('--network=mainnet') ? 'mainnet' : 'testnet';
+const rpc = network === 'mainnet' ? mainnetRpc : testnetRpc;
+console.log(`Using ${network} RPC: ${rpc}`)
+
+const provider = new ethers.providers.JsonRpcProvider(rpc)
 
 const main = async () => {
   const _since = await provider.getBlockNumber()
@@ -12,8 +16,10 @@ const main = async () => {
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   const contract = new ethers.Contract(sOASAddress, abi, signer)
+  const publicAddress = process.env.PUBLIC_ADDRESS
+  console.log(`Minting SOAS for ${publicAddress}`)
   const tx = await contract.mint(
-    '0xD75F45a1922869fEE15f87EC5451772c087347D9',
+    publicAddress,
     since,
     until,
     {

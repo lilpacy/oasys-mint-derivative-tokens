@@ -1,14 +1,15 @@
 import ethers from 'ethers'
 
 import abi from './woas-abi.json' assert { type: "json" };
-import { mainnetRpc, wOASAddress } from './constants.mjs'
+import { mainnetRpc, testnetRpc, wOASAddress } from './constants.mjs'
 
-const provider = new ethers.providers.JsonRpcProvider(mainnetRpc)
+const network = process.argv.includes('--network=mainnet') ? 'mainnet' : 'testnet';
+const rpc = network === 'mainnet' ? mainnetRpc : testnetRpc;
+console.log(`Using ${network} RPC: ${rpc}`)
+
+const provider = new ethers.providers.JsonRpcProvider(rpc)
 
 const main = async () => {
-  const _since = await provider.getBlockNumber()
-  const since = (await provider.getBlock(_since)).timestamp + 1_000_000_000
-  const until = since + 1_000_000_000
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   const contract = new ethers.Contract(wOASAddress, abi, signer)

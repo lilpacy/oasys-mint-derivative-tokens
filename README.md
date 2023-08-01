@@ -13,6 +13,8 @@ export PRIVATE_KEY=xxxx
 ## mint
 
 ```sh
-yarn soas
-yarn woas
+yarn soas --network mainnet
+yarn soas --network testnet
+yarn woas --network mainnet
+yarn woas --network testnet
 ```
