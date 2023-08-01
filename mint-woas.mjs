@@ -1,9 +1,9 @@
 import ethers from 'ethers'
 
 import abi from './woas-abi.json' assert { type: "json" };
-import { wOASAddress } from './constants.mjs'
+import { mainnetRpc, wOASAddress } from './constants.mjs'
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc.mainnet.oasys.games')
+const provider = new ethers.providers.JsonRpcProvider(mainnetRpc)
 
 const main = async () => {
   const _since = await provider.getBlockNumber()
