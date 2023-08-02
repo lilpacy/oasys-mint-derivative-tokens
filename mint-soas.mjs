@@ -1,33 +1,58 @@
-import ethers from 'ethers'
+import { soasAbi } from './soas-abi.mjs';
+import {
+  mainnetChain,
+  mainnetRpc,
+  sOASAddress,
+  testnetChain,
+  testnetRpc,
+} from './constants.mjs';
+import {
+  createPublicClient,
+  createWalletClient,
+  getContract,
+  http,
+  parseEther,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
-import abi from './soas-abi.json' assert { type: "json" };
-import { mainnetRpc, sOASAddress, testnetRpc } from './constants.mjs'
-
-const network = process.argv.includes('--network=mainnet') ? 'mainnet' : 'testnet';
+const network = process.argv.includes('--network=mainnet')
+  ? 'mainnet'
+  : 'testnet';
 const rpc = network === 'mainnet' ? mainnetRpc : testnetRpc;
-console.log(`Using ${network} RPC: ${rpc}`)
+const chain = network === 'mainnet' ? mainnetChain : testnetChain;
+console.log(`Using ${network} RPC: ${rpc}`);
 
-const provider = new ethers.providers.JsonRpcProvider(rpc)
+const account = privateKeyToAccount('0x' + process.env.PRIVATE_KEY);
+const publicAddress = process.env.PUBLIC_ADDRESS;
+
+const publicClient = createPublicClient({
+  account,
+  // chain,
+  transport: http(rpc),
+});
+const walletClient = createWalletClient({
+  account,
+  chain,
+  transport: http(rpc),
+});
+
+const contract = getContract({
+  address: sOASAddress,
+  abi: soasAbi,
+  walletClient,
+});
 
 const main = async () => {
-  const _since = await provider.getBlockNumber()
-  const since = (await provider.getBlock(_since)).timestamp + 1_000_000_000
-  const until = since + 1_000_000_000
-  const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const _since = await publicClient.getBlockNumber();
+  const since =
+    (await publicClient.getBlock(_since)).timestamp + 1_000_000_000n;
+  const until = since + 1_000_000_000n;
+  console.log(`Minting SOAS for ${publicAddress}`);
 
-  const contract = new ethers.Contract(sOASAddress, abi, signer)
-  const publicAddress = process.env.PUBLIC_ADDRESS
-  console.log(`Minting SOAS for ${publicAddress}`)
-  const tx = await contract.mint(
-    publicAddress,
-    since,
-    until,
-    {
-      value: ethers.utils.parseEther("1"),
-      gasLimit: 10_000_000
-    }
-  )
-  return tx.hash
-}
+  const hash = await contract.write.mint([publicAddress, since, until], {
+    value: parseEther('1'),
+  });
+  return hash;
+};
 
-main().then(console.log).catch(console.error)
+main().then(console.log).catch(console.error);
