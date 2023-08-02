@@ -1,0 +1,15 @@
+# Ignore specific files
+ignorefile.js
+ignorefile.css
+
+# Ignore files in a specific directory
+ignore-directory/
+
+# Ignore specific file extensions
+*.md
+*.txt
+yarn.lock
+
+# Ignore all files in a specific directory
+node_modules/
+dist/
